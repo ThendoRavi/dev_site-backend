@@ -22,6 +22,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+process.env.EMAIL_USER = process.env.EMAIL_USER || 'ravhenganiwebsolutions@gmail.com';
+
 app.post('/api/contact-form', async (req, res) => {
   try {
     const { name, email, budget, message } = req.body;
