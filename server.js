@@ -31,7 +31,7 @@ app.post('/api/contact-form', async (req, res) => {
     // 1. Send email to you
     const adminMailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'thendorav@gmail.com',
+      to: 'ravhenganiwebsolutions@gmail.com',
       subject: 'New Contact Form Submission',
       text: `
         Name: ${name}
