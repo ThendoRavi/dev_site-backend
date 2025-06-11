@@ -28,7 +28,8 @@ app.post('/api/contact-form', async (req, res) => {
 
     console.log('Received contact form submission:', req.body);
 
-    const mailOptions = {
+    // 1. Send email to you
+    const adminMailOptions = {
       from: process.env.EMAIL_USER,
       to: 'thendorav@gmail.com',
       subject: 'New Contact Form Submission',
@@ -40,12 +41,61 @@ app.post('/api/contact-form', async (req, res) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    await transporter.sendMail(adminMailOptions);
 
-    res.status(200).json({ message: 'Form submitted successfully' });
+    // 2. Send automatic reply to the sender
+    const userMailOptions = {
+  from: process.env.EMAIL_USER,
+  to: email,
+  subject: 'Thank You for Getting in Touch!',
+  text: `Hi ${name},
+
+Thank you for reaching out to me. I've received your message and will review it shortly. You can expect a response within 1–2 business days.
+
+Here’s a summary of your submission:
+------------------------------------------------
+Budget: ${budget}
+Message: ${message}
+
+If you have any additional details you'd like to share, feel free to reply to this email.
+
+Best regards,  
+Thendo Ravhengani  
+Web Developer & Designer  
+Portfolio: https://thendoravhengani.co.za
+  `,
+
+  html: `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <p>Hi <strong>${name}</strong>,</p>
+
+      <p>Thank you for reaching out to me. I’ve received your message and will get back to you within 1–2 business days.</p>
+
+      <h3 style="margin-top: 20px;">Submission Summary:</h3>
+      <ul>
+        <li><strong>Budget:</strong> ${budget}</li>
+        <li><strong>Message:</strong> ${message}</li>
+      </ul>
+
+      <p>If you have any additional details to share, feel free to reply to this email.</p>
+
+      <p style="margin-top: 30px;">
+        Best regards,<br/>
+        <strong>Thendo Ravhengani</strong><br/>
+        Web Developer & Designer<br/>
+        <a href="https://thendoravhengani.co.za" target="_blank">thendoravhengani.co.za</a>
+      </p>
+    </div>
+  `,
+};
+
+
+    await transporter.sendMail(userMailOptions);
+
+    res.status(200).json({ message: 'Form submitted and confirmation sent successfully' });
   } catch (error) {
-    console.error('Error submitting form:', error);
-    res.status(500).json({ error: 'Failed to submit form' });
+    console.error('Error submitting form or sending email:', error);
+    res.status(500).json({ error: 'Failed to submit form or send confirmation' });
   }
 });
 
